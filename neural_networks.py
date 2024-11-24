@@ -95,10 +95,28 @@ def update(frame, mlp, ax_input, ax_hidden, ax_gradient, X, y):
     
     # Hidden Space Plot (Left)
     hidden_features = mlp.activations['a1']
+    
+    # Add visualization of distorted input space
+    xx = np.linspace(-3, 3, 20)
+    yy = np.linspace(-3, 3, 20)
+    XX, YY = np.meshgrid(xx, yy)
+    grid_points = np.column_stack((XX.ravel(), YY.ravel()))
+    
+    # Transform grid points through the first layer
+    Z1 = np.dot(grid_points, mlp.W1) + mlp.b1
+    transformed_grid = mlp.activation(Z1)
+    
+    # Plot the transformed grid as a wireframe
+    ax_hidden.plot_wireframe(transformed_grid[:, 0].reshape(20, 20),
+                           transformed_grid[:, 1].reshape(20, 20),
+                           transformed_grid[:, 2].reshape(20, 20),
+                           alpha=0.1, color='gray')
+    
+    # Plot original features in hidden space
     ax_hidden.scatter(hidden_features[:, 0], hidden_features[:, 1], hidden_features[:, 2], 
                      c=y.ravel(), cmap='bwr', alpha=0.7)
     
-    # Add a semi-transparent surface to show the decision boundary in hidden space
+    # Add decision boundary surface in hidden space
     xx = np.linspace(-1, 1, 20)
     yy = np.linspace(-1, 1, 20)
     XX, YY = np.meshgrid(xx, yy)
